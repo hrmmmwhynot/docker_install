@@ -32,6 +32,7 @@ mkdir -p $CUR_DIR/docker_store
 docker_configs=$(cat <<EOH
 export DOCKER_TMPDIR="$MYDOCKER_TMP"
 DOCKER_OPTS="--storage-driver=devicemapper -g $MYDOCKER_STORE"
+EOH
 )
 
 cp -a "${MYDOCKER_CFGS}/daemon.json" /etc/docker/daemon.json
