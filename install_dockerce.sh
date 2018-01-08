@@ -1,12 +1,33 @@
 #!/bin/bash
 
+ubuntu_devicemapper_config() {
+  CUR_DIR=`pwd`
+  MYDOCKER_CFGS="${CUR_DIR}/docker_configs"
+  MYDOCKER_STORE="$CUR_DIR/docker_store"
+  MYDOCKER_TMP=$MYDOCKER_STORE
+
+  mkdir -p $CUR_DIR/docker_store
+  docker_configs=$(cat <<-EOH
+export DOCKER_TMPDIR="$MYDOCKER_TMP"
+DOCKER_OPTS="--storage-driver=devicemapper -g $MYDOCKER_STORE"
+EOH
+)
+  echo "$docker_configs" > "${MYDOCKER_CFGS}/docker"
+
+  cp -a /etc/docker/daemon.json /etc/docker/daemon.json.bak
+  cp -a /etc/default/docker /etc/default/docker.bak
+  cp -a "${MYDOCKER_CFGS}/daemon.json" /etc/docker/daemon.json
+  cp -a "${MYDOCKER_CFGS}/docker" /etc/default/docker
+
+}
+
 install_prompt() {
-  echo "Do you want to use devicemapper instead of auf for docker (put No if you don't know)?"
-  select choice in "Yes" "No"; do
-    case $choice in
-      Yes ) printf "\nInstalling devicemapper configs...\n" ;ubuntu_devicemapper_config; break;;
-      No ) printf "\nSkipping devicemapper configs...\n"; break;;
-    esac
+  echo "Do you want to use devicemapper instead of auf for docker (put 2 if you don't know)? (Enter:1 or 2)"
+  select yn in "Yes" "No"; do
+      case $yn in
+          Yes ) printf "\nDoing config for devicemapper\n"; ubuntu_devicemapper_config; break;;
+          No ) break;;
+      esac
   done
 }
 
@@ -38,27 +59,6 @@ ubuntu_install_docker() {
   service docker restart
 
   docker run hello-world
-}
-
-ubuntu_devicemapper_config() {
-  CUR_DIR=`pwd`
-  MYDOCKER_CFGS="${CUR_DIR}/docker_configs"
-  MYDOCKER_STORE="$CUR_DIR/docker_store"
-  MYDOCKER_TMP=$MYDOCKER_STORE
-  
-  mkdir -p $CUR_DIR/docker_store
-  docker_configs=$(cat <<-EOH
-export DOCKER_TMPDIR="$MYDOCKER_TMP"
-DOCKER_OPTS="--storage-driver=devicemapper -g $MYDOCKER_STORE"
-EOH
-)
-  echo "$docker_configs" > "${MYDOCKER_CFGS}/docker"
-  
-  cp -a /etc/docker/daemon.json /etc/docker/daemon.json.bak
-  cp -a /etc/default/docker /etc/default/docker.bak
-  cp -a "${MYDOCKER_CFGS}/daemon.json" /etc/docker/daemon.json
-  cp -a "${MYDOCKER_CFGS}/docker" /etc/default/docker
-
 }
 
 # check OS
