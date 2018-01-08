@@ -69,8 +69,8 @@ amznlinux_install_docker() {
 
 # check OS
 checkos() {
-  if ! cat /proc/version | grep -i ubuntu; then
-    printf "\nNot Ubuntu OS. Exiting...\n"
+  if ! cat /etc/issue | grep -i "ubuntu\|amazon"; then
+    printf "\nThis script only supports Ubuntu or AmazonLinux OS. Exiting...\n"
     exit 1
   elif `lsb_release -r | grep -e 16.04 > /dev/null 2>&1`;then
     printf "\nUbuntu 16.04 is installed.. continuing\n"
