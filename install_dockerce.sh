@@ -61,6 +61,12 @@ ubuntu_install_docker() {
   docker run hello-world
 }
 
+amznlinux_install_docker() {
+  yum install -y docker
+  service docker start
+  usermod -a -G docker ec2-user
+}
+
 # check OS
 checkos() {
   if ! cat /proc/version | grep -i ubuntu; then
@@ -69,6 +75,9 @@ checkos() {
   elif `lsb_release -r | grep -e 16.04 > /dev/null 2>&1`;then
     printf "\nUbuntu 16.04 is installed.. continuing\n"
     ubuntu_install_docker
+  elif `cat /etc/issue | grep -i amazon > /dev/null 2>&1`; then
+    printf "\nAmazon Linux is installed.. continuing\n"
+    amznlinux_install_docker
   fi
 }
 
