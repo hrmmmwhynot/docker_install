@@ -1,3 +1,4 @@
 {
-  "storage-driver": "devicemapper"
+  "storage-driver": "devicemapper",
+  "graph": "_PWD_"
 }

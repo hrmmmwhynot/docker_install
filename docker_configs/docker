@@ -1,2 +1,0 @@
-export DOCKER_TMPDIR="/media/ubuntu/8568f409-3641-4727-9bff-a32b83b5c11d/altcoin_generator/docker_install/docker_store"
-DOCKER_OPTS="--storage-driver=devicemapper -g /media/ubuntu/8568f409-3641-4727-9bff-a32b83b5c11d/altcoin_generator/docker_install/docker_store"

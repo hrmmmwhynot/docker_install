@@ -7,18 +7,20 @@ ubuntu_devicemapper_config() {
   MYDOCKER_TMP=$MYDOCKER_STORE
 
   mkdir -p $CUR_DIR/docker_store
-  docker_configs=$(cat <<-EOH
-export DOCKER_TMPDIR="$MYDOCKER_TMP"
-DOCKER_OPTS="--storage-driver=devicemapper -g $MYDOCKER_STORE"
-EOH
-)
-  echo "$docker_configs" > "${MYDOCKER_CFGS}/docker"
+#  docker_configs=$(cat <<-EOH
+#export DOCKER_TMPDIR="$MYDOCKER_TMP"
+#DOCKER_OPTS="--storage-driver=devicemapper -g $MYDOCKER_STORE"
+#EOH
+#)
+
+  # /etc/default/docker is not reliable, ust daemon.json for configs instead
+  # echo "$docker_configs" > "${MYDOCKER_CFGS}/docker"
+  # cp -a /etc/default/docker /etc/default/docker.bak
+  # cp -a "${MYDOCKER_CFGS}/docker" /etc/default/docker
 
   cp -a /etc/docker/daemon.json /etc/docker/daemon.json.bak
-  cp -a /etc/default/docker /etc/default/docker.bak
   cp -a "${MYDOCKER_CFGS}/daemon.json" /etc/docker/daemon.json
-  cp -a "${MYDOCKER_CFGS}/docker" /etc/default/docker
-
+  sed -i "s _PWD_ $MYDOCKER_STORE g" /etc/docker/daemon.json
 }
 
 install_prompt() {
@@ -47,17 +49,18 @@ ubuntu_install_docker() {
      $(lsb_release -cs) \
      stable"
   
+  # start install
   echo "Y" | apt-get update
   
   echo "Y" | apt-get install vim
-  
+ 
   echo "Y" | apt-get install docker-ce
   
   echo "Y" | apt-get install docker-ce=17.12.0~ce-0~ubuntu
-  
-  install_prompt
-  service docker restart
+  service docker stop
 
+  install_prompt
+  service docker start
   docker run hello-world
 }
 
